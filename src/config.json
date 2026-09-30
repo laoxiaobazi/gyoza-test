@@ -35,27 +35,27 @@
   },
   "color": {
     "accent": [
-      { "light": "#F55555", "dark": "#FCCF31" },
-      { "light": "#0396FF", "dark": "#ABDCFF" },
-      { "light": "#fb7287", "dark": "#99D8CF" },
-      { "light": "#F072B6", "dark": "#FFF886" },
-      { "light": "#9F44D3", "dark": "#E2B0FF" },
-      { "light": "#FF6666", "dark": "#A1CCD1" },
-      { "light": "#F6416C", "dark": "#838BC6" },
-      { "light": "#32CCBC", "dark": "#90F7EC" },
-      { "light": "#33A6B8", "dark": "#79F1A4" },
-      { "light": "#F55555", "dark": "#FCCF31" }
+      { "light": "#7357B8", "dark": "#9D8ACB" },
+      { "light": "#7357B8", "dark": "#9D8ACB" },
+      { "light": "#7357B8", "dark": "#9D8ACB" },
+      { "light": "#7357B8", "dark": "#9D8ACB" },
+      { "light": "#7357B8", "dark": "#9D8ACB" },
+      { "light": "#7357B8", "dark": "#9D8ACB" },
+      { "light": "#7357B8", "dark": "#9D8ACB" },
+      { "light": "#7357B8", "dark": "#9D8ACB" },
+      { "light": "#7357B8", "dark": "#9D8ACB" },
+      { "light": "#7357B8", "dark": "#9D8ACB" }
     ],
     "bg": {
-      "primary": { "light": "#ffffff", "dark": "#1c1c1e" },
-      "secondary": { "light": "#f4f4f5", "dark": "#27272a" }
+      "primary": { "light": "#F7F7F4", "dark": "#1B1A21" },
+      "secondary": { "light": "#EFEEE8", "dark": "#25232E" }
     },
     "text": {
-      "primary": { "light": "#373a3c", "dark": "#ffffff" },
-      "secondary": { "light": "#71717a", "dark": "#d1d5db" }
+      "primary": { "light": "#191A1D", "dark": "#E8E6F0" },
+      "secondary": { "light": "#6F7076", "dark": "#A9A7B5" }
     },
     "border": {
-      "primary": { "light": "#e4e4e7", "dark": "#3f3f46" }
+      "primary": { "light": "#DDDCD4", "dark": "#383545" }
     }
   },
   "menus": [
@@ -88,33 +88,69 @@
       "name": "老肖把子",
       "focus": ["个人项目", "方法论", "AI"],
       "tagline": "把做过的事沉淀成方法论，把方法做成能用的东西。（占位文案，记得改成你自己的定位）",
-      "heroNote": "欢迎交流"
+      "heroNote": "欢迎交流",
+      "typewriter": [
+        "把复杂问题拆简单的人",
+        "把方法做成工具的人",
+        "边做边分享的人"
+      ]
     },
     "projects": {
       "eyebrow": "BUILD IN PUBLIC",
-      "title": "我的项目",
+      "title": "从想法到可用产品",
       "description": "把自己反复使用的方法整理出来，做成别人也能直接调用的工具。（占位文案）",
+      "selectorLabel": "选择项目",
       "items": [
         {
           "index": "01",
           "name": "项目占位一",
           "summary": "一句话介绍这个项目：从证据到结论，它是怎么工作的。",
-          "link": "#projects",
-          "linkText": "查看项目"
+          "tags": ["标签一", "标签二", "标签三"],
+          "link": "",
+          "linkText": "查看 GitHub",
+          "terminal": {
+            "backTitle": "workflow.json",
+            "backCode": "input → method → output",
+            "midTitle": "project.config",
+            "midCode": "mode: structured-output",
+            "frontTitle": "run-session",
+            "frontStatus": "running",
+            "frontOutput": ["loading project …", "building steps …", "done. 3 outputs generated"]
+          }
         },
         {
           "index": "02",
           "name": "项目占位二",
           "summary": "一句话介绍这个项目：它解决了什么问题，适合谁用。",
-          "link": "#projects",
-          "linkText": "查看项目"
+          "tags": ["标签一", "标签二"],
+          "link": "",
+          "linkText": "查看 GitHub",
+          "terminal": {
+            "backTitle": "rules.md",
+            "backCode": "keep value → remove noise",
+            "midTitle": "project.config",
+            "midCode": "voice: natural",
+            "frontTitle": "run-session",
+            "frontStatus": "running",
+            "frontOutput": ["loading rules …", "applying …", "done."]
+          }
         },
         {
           "index": "03",
           "name": "项目占位三",
           "summary": "一句话介绍这个项目：输入是什么，输出是什么。",
-          "link": "#projects",
-          "linkText": "查看项目"
+          "tags": ["标签一", "标签二", "标签三", "标签四"],
+          "link": "",
+          "linkText": "查看 GitHub",
+          "terminal": {
+            "backTitle": "steps.json",
+            "backCode": "raw → clean → export",
+            "midTitle": "project.config",
+            "midCode": "format: markdown",
+            "frontTitle": "run-session",
+            "frontStatus": "running",
+            "frontOutput": ["parsing input …", "exporting …", "done."]
+          }
         }
       ]
     },
@@ -175,6 +211,27 @@
           "title": "经历占位三",
           "summary": "这段时间在做什么，做出了什么结果。",
           "tags": ["关键词一", "关键词二", "关键词三"]
+        }
+      ]
+    },
+    "contact": {
+      "eyebrow": "CONNECT",
+      "title": "和我聊聊",
+      "description": "合作、交流，或者只是打个招呼，都欢迎。（占位文案）",
+      "cards": [
+        {
+          "label": "邮箱",
+          "hint": "合作与交流",
+          "value": "hello@example.com",
+          "action": "copy",
+          "actionText": "点击复制"
+        },
+        {
+          "label": "微信",
+          "hint": "联系与合作",
+          "value": "your-wechat-id",
+          "action": "copy",
+          "actionText": "点击复制"
         }
       ]
     }

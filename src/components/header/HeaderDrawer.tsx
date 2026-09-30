@@ -103,11 +103,37 @@ const TriggerButton = forwardRef<HTMLButtonElement>((props, ref) => {
 function DrawerContentImpl() {
   const { dismiss } = useContext(DrawerContext)
 
+  function handleMenuClick(e: React.MouseEvent<HTMLAnchorElement>, rawLink: string) {
+    dismiss()
+    const href = withBase(rawLink)
+    const hashIndex = href.indexOf('#')
+    if (hashIndex === -1) return
+    const pathPart = href.slice(0, hashIndex)
+    const hash = href.slice(hashIndex + 1)
+    const currentPath = window.location.pathname.replace(/\/+$/, '')
+    const targetPath = pathPart.replace(/\/+$/, '')
+    const samePage = !targetPath || currentPath === targetPath
+    if (!samePage) return
+    e.preventDefault()
+    setTimeout(() => {
+      const target = hash ? document.getElementById(hash) : null
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth' })
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+      }
+    }, 300)
+  }
+
   return (
     <ul className="mt-8 pb-8 overflow-y-auto overflow-x-hidden min-h-0">
       {menus.map((menu) => (
         <motion.li key={menu.name} variants={menuItemVariants}>
-          <a className="inline-flex p-2 space-x-4" href={withBase(menu.link)} onClick={dismiss}>
+          <a
+            className="inline-flex p-2 space-x-4"
+            href={withBase(menu.link)}
+            onClick={(e) => handleMenuClick(e, menu.link)}
+          >
             <i className={clsx('iconfont', menu.icon)}></i>
             <span>{menu.name}</span>
           </a>

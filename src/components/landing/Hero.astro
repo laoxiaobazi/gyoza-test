@@ -1,7 +1,7 @@
 ---
-import { landing, hero, author } from '@/config.json'
+import { landing, hero } from '@/config.json'
 
-const { name, focus, tagline } = landing.hero
+const { name, focus, tagline, typewriter } = landing.hero
 ---
 
 <section id="hero" class="max-w-[1100px] mx-auto px-4 md:px-8 pt-6 pb-10 md:pt-10 md:pb-16">
@@ -26,19 +26,26 @@ const { name, focus, tagline } = landing.hero
         }
       </span>
     </h1>
+
     <p class="mt-8 text-lg md:text-xl text-secondary max-w-[640px] leading-relaxed">{tagline}</p>
+
+    <div class="mt-6 inline-flex items-center gap-2 rounded-full border border-[#191A1D]/15 dark:border-white/15 px-4 py-1.5">
+      <span class="pulse-dot" aria-hidden></span>
+      <span id="landing-typewriter" class="text-xs text-[#4C3B72] dark:text-[#9D8ACB]"></span>
+      <span class="type-caret" aria-hidden="true"></span>
+    </div>
   </div>
 
   <div class="mt-12 grid md:grid-cols-3 gap-4" data-reveal>
     {
       landing.projects.items.slice(0, 3).map((item) => (
         <a
-          href={item.link || '#projects'}
-          class="group block rounded-2xl border border-primary bg-secondary/50 hover:bg-secondary p-5 transition-all hover:-translate-y-1"
+          href="#projects"
+          class="group block rounded-2xl border border-[#191A1D]/20 hover:border-[#191A1D]/60 dark:border-white/20 dark:hover:border-white/60 bg-transparent p-5 transition-all hover:-translate-y-1"
         >
           <span class="text-sm font-bold text-accent font-['Atkinson']">{item.index}</span>
           <span class="block mt-2 font-bold text-lg">{item.name}</span>
-          <span class="block mt-1 text-sm text-secondary">{item.summary}</span>
+          <span class="block mt-1 text-sm text-secondary line-clamp-2">{item.summary}</span>
           <span class="inline-flex items-center gap-1 mt-4 text-sm text-accent">
             查看项目
             <i class="iconfont icon-down group-hover:translate-y-0.5 transition-transform" />
@@ -55,7 +62,7 @@ const { name, focus, tagline } = landing.hero
           href={social.url}
           target={social.url.startsWith('http') ? '_blank' : undefined}
           rel={social.url.startsWith('http') ? 'noopener noreferrer' : undefined}
-          class="inline-flex items-center gap-2 rounded-full border border-primary px-4 py-2 text-sm hover:border-accent hover:text-accent transition-colors"
+          class="inline-flex items-center gap-2 rounded-full border border-[#191A1D]/25 px-4 py-2 text-sm hover:border-[#191A1D] hover:bg-[#EFEEE8] dark:border-white/25 dark:hover:border-white/60 dark:hover:bg-[#25232E] transition-colors"
         >
           <i class={`iconfont ${social.icon}`} />
           <span>{social.name}</span>
@@ -65,3 +72,95 @@ const { name, focus, tagline } = landing.hero
     <span class="inline-flex items-center text-sm text-secondary">{landing.hero.heroNote}</span>
   </div>
 </section>
+
+<style>
+  .pulse-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 9999px;
+    background: #7357b8;
+    animation: pulse-dot-pulse 1.6s ease-in-out infinite;
+  }
+
+  .type-caret {
+    width: 1px;
+    height: 14px;
+    background: #4c3b72;
+    animation: type-caret-blink 1s step-end infinite;
+  }
+
+  @keyframes pulse-dot-pulse {
+    0%,
+    100% {
+      opacity: 1;
+      box-shadow: 0 0 0 0 rgb(115 87 184 / 0.4);
+    }
+    50% {
+      opacity: 0.6;
+      box-shadow: 0 0 0 6px rgb(115 87 184 / 0);
+    }
+  }
+
+  @keyframes type-caret-blink {
+    50% {
+      opacity: 0;
+    }
+  }
+
+  [data-theme='dark'] .pulse-dot {
+    background: #9d8acb;
+  }
+
+  [data-theme='dark'] .type-caret {
+    background: #9d8acb;
+  }
+</style>
+
+<script>
+  import { landing } from '@/config.json'
+
+  function setupTypewriter() {
+    const el = document.getElementById('landing-typewriter')
+    if (!el || el.dataset.ready === '1') return
+    el.dataset.ready = '1'
+
+    const phrases = landing.hero.typewriter.length
+      ? landing.hero.typewriter
+      : ['把复杂讲简单的人']
+    let phraseIdx = 0
+    let charIdx = 0
+    let deleting = false
+
+    function tick() {
+      const phrase = phrases[phraseIdx]
+      if (!deleting) {
+        charIdx++
+        el!.textContent = phrase.slice(0, charIdx)
+        if (charIdx === phrase.length) {
+          deleting = true
+          window.setTimeout(tick, 1800)
+          return
+        }
+        window.setTimeout(tick, 110)
+      } else {
+        charIdx--
+        el!.textContent = phrase.slice(0, charIdx)
+        if (charIdx === 0) {
+          deleting = false
+          phraseIdx = (phraseIdx + 1) % phrases.length
+          window.setTimeout(tick, 400)
+          return
+        }
+        window.setTimeout(tick, 45)
+      }
+    }
+    tick()
+  }
+
+  setupTypewriter()
+  document.addEventListener('astro:page-load', () => {
+    const el = document.getElementById('landing-typewriter')
+    if (el) el.dataset.ready = ''
+    setupTypewriter()
+  })
+</script>

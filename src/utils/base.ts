@@ -12,7 +12,7 @@ export function withBase(path: string): string {
   return BASE + path.replace(/^\//, '')
 }
 
-/** 去掉末尾斜杠，用于路径比较 */
+/** 去掉末尾斜杠与 hash，用于路径比较 */
 export function normalizePath(path: string): string {
-  return path.replace(/\/+$/, '')
+  return path.split('#')[0].replace(/\/+$/, '')
 }

@@ -110,10 +110,30 @@ function HeaderMenuItem({
   title: string
   icon: string
 }) {
+  function handleClick(e: React.MouseEvent<HTMLAnchorElement>) {
+    // 锚点导航：同页 hash 时直接平滑滚动，不交给 swup
+    const hashIndex = href.indexOf('#')
+    if (hashIndex === -1) return
+    const pathPart = href.slice(0, hashIndex)
+    const hash = href.slice(hashIndex + 1)
+    const currentPath = window.location.pathname.replace(/\/+$/, '')
+    const targetPath = pathPart.replace(/\/+$/, '')
+    const samePage = !targetPath || currentPath === targetPath || currentPath + '/' === targetPath
+    if (!samePage) return
+    e.preventDefault()
+    const target = hash ? document.getElementById(hash) : null
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth' })
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  }
+
   return (
     <a
       className={clsx('relative block px-4 py-1.5', isActive ? 'text-accent' : 'hover:text-accent')}
       href={href}
+      onClick={handleClick}
     >
       <div className="flex space-x-2">
         {isActive && (

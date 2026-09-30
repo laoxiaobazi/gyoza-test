@@ -1,0 +1,12 @@
+---
+import SectionHeading from './SectionHeading.astro'
+import { ContactCards } from './ContactCards'
+import { landing } from '@/config.json'
+
+const { contact } = landing
+---
+
+<section id="contact" class="max-w-[1100px] mx-auto px-4 md:px-8 py-16 md:py-24">
+  <SectionHeading eyebrow={contact.eyebrow} title={contact.title} description={contact.description} />
+  <ContactCards cards={contact.cards} client:visible />
+</section>
