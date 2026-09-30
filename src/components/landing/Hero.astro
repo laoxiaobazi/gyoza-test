@@ -1,0 +1,67 @@
+---
+import { landing, hero, author } from '@/config.json'
+
+const { name, focus, tagline } = landing.hero
+---
+
+<section id="hero" class="max-w-[1100px] mx-auto px-4 md:px-8 pt-6 pb-10 md:pt-10 md:pb-16">
+  <div data-reveal>
+    <h1 class="text-4xl md:text-6xl font-bold leading-tight">
+      我是{name}
+      <span class="block mt-3 md:inline md:mt-0">
+        专注
+        {
+          focus.map((item, i) => (
+            <span class="whitespace-nowrap">
+              <span class="relative inline-block px-1 text-accent">
+                {item}
+                <span
+                  class="absolute left-0 right-0 bottom-1 h-3 bg-accent/15 -z-1 rounded-sm"
+                  aria-hidden
+                />
+              </span>
+              {i < focus.length - 1 && <span class="text-secondary">+</span>}
+            </span>
+          ))
+        }
+      </span>
+    </h1>
+    <p class="mt-8 text-lg md:text-xl text-secondary max-w-[640px] leading-relaxed">{tagline}</p>
+  </div>
+
+  <div class="mt-12 grid md:grid-cols-3 gap-4" data-reveal>
+    {
+      landing.projects.items.slice(0, 3).map((item) => (
+        <a
+          href={item.link || '#projects'}
+          class="group block rounded-2xl border border-primary bg-secondary/50 hover:bg-secondary p-5 transition-all hover:-translate-y-1"
+        >
+          <span class="text-sm font-bold text-accent font-['Atkinson']">{item.index}</span>
+          <span class="block mt-2 font-bold text-lg">{item.name}</span>
+          <span class="block mt-1 text-sm text-secondary">{item.summary}</span>
+          <span class="inline-flex items-center gap-1 mt-4 text-sm text-accent">
+            查看项目
+            <i class="iconfont icon-down group-hover:translate-y-0.5 transition-transform" />
+          </span>
+        </a>
+      ))
+    }
+  </div>
+
+  <div class="mt-10 flex flex-wrap gap-4" data-reveal>
+    {
+      hero.socials.map((social) => (
+        <a
+          href={social.url}
+          target={social.url.startsWith('http') ? '_blank' : undefined}
+          rel={social.url.startsWith('http') ? 'noopener noreferrer' : undefined}
+          class="inline-flex items-center gap-2 rounded-full border border-primary px-4 py-2 text-sm hover:border-accent hover:text-accent transition-colors"
+        >
+          <i class={`iconfont ${social.icon}`} />
+          <span>{social.name}</span>
+        </a>
+      ))
+    }
+    <span class="inline-flex items-center text-sm text-secondary">{landing.hero.heroNote}</span>
+  </div>
+</section>

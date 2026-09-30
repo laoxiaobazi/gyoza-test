@@ -20,6 +20,7 @@ const ogImage = image ? new URL(withBase(image), Astro.site) : undefined
 
 <link rel="apple-touch-icon" sizes="180x180" href={withBase(site.appleTouchIcon)} />
 <link rel="icon" href={withBase(site.favicon)} />
+<link rel="stylesheet" href={withBase('/fonts/fonts.css')} />
 <!-- L'Internationale, 
   Sera le genre humain. -->
 <title>{titleWithSiteSuffix}</title>

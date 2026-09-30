@@ -1,0 +1,32 @@
+---
+import SectionHeading from './SectionHeading.astro'
+import { landing } from '@/config.json'
+
+const { projects } = landing
+---
+
+<section id="projects" class="max-w-[1100px] mx-auto px-4 md:px-8 py-16 md:py-24">
+  <SectionHeading eyebrow={projects.eyebrow} title={projects.title} description={projects.description} />
+  <div class="grid md:grid-cols-3 gap-5">
+    {
+      projects.items.map((item) => (
+        <a
+          href={item.link || '#projects'}
+          class="group block rounded-2xl border border-primary p-6 hover:border-accent/60 hover:shadow-lg hover:shadow-accent/5 transition-all hover:-translate-y-1"
+          data-reveal
+        >
+          <div class="flex items-baseline justify-between">
+            <span class="text-3xl font-bold text-accent/80 font-['Atkinson']">{item.index}</span>
+            <i class="iconfont icon-external-link text-secondary opacity-0 group-hover:opacity-100 transition-opacity" />
+          </div>
+          <h3 class="mt-4 text-xl font-bold">{item.name}</h3>
+          <p class="mt-2 text-sm text-secondary leading-relaxed">{item.summary}</p>
+          <span class="inline-flex items-center gap-1 mt-5 text-sm text-accent">
+            {item.linkText}
+            <i class="iconfont icon-right group-hover:translate-x-0.5 transition-transform" />
+          </span>
+        </a>
+      ))
+    }
+  </div>
+</section>

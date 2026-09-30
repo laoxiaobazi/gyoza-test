@@ -1,0 +1,23 @@
+---
+import type { GetStaticPaths } from 'astro'
+import PostListPage from '@/components/post/PostListPage.astro'
+import { getSortedPosts } from '@/utils/content'
+import appConfig from '@/config.json'
+
+export const getStaticPaths = (async () => {
+  return [{ params: {}, props: { currentPage: 1 } }]
+}) satisfies GetStaticPaths
+
+interface Props {
+  currentPage: number
+}
+
+const { currentPage } = Astro.props
+
+const sortedPosts = await getSortedPosts()
+const { perPage } = appConfig.posts
+const totalPage = Math.ceil(sortedPosts.length / perPage)
+const data = sortedPosts.slice(0, perPage)
+---
+
+<PostListPage currentPage={currentPage} totalPage={totalPage} data={data} />

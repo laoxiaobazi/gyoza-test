@@ -65,18 +65,119 @@
       "icon": "icon-pantone"
     },
     {
-      "name": "归档",
-      "link": "/archives",
-      "icon": "icon-archive"
+      "name": "项目",
+      "link": "/#projects",
+      "icon": "icon-flask"
     },
     {
-      "name": "关于",
+      "name": "知识库",
+      "link": "/#knowledge",
+      "icon": "icon-file-list"
+    },
+    {
+      "name": "关于我",
       "link": "/about",
       "icon": "icon-ghost"
     }
   ],
   "posts": {
     "perPage": 10
+  },
+  "landing": {
+    "hero": {
+      "name": "老肖把子",
+      "focus": ["个人项目", "方法论", "AI"],
+      "tagline": "把做过的事沉淀成方法论，把方法做成能用的东西。（占位文案，记得改成你自己的定位）",
+      "heroNote": "欢迎交流"
+    },
+    "projects": {
+      "eyebrow": "BUILD IN PUBLIC",
+      "title": "我的项目",
+      "description": "把自己反复使用的方法整理出来，做成别人也能直接调用的工具。（占位文案）",
+      "items": [
+        {
+          "index": "01",
+          "name": "项目占位一",
+          "summary": "一句话介绍这个项目：从证据到结论，它是怎么工作的。",
+          "link": "#projects",
+          "linkText": "查看项目"
+        },
+        {
+          "index": "02",
+          "name": "项目占位二",
+          "summary": "一句话介绍这个项目：它解决了什么问题，适合谁用。",
+          "link": "#projects",
+          "linkText": "查看项目"
+        },
+        {
+          "index": "03",
+          "name": "项目占位三",
+          "summary": "一句话介绍这个项目：输入是什么，输出是什么。",
+          "link": "#projects",
+          "linkText": "查看项目"
+        }
+      ]
+    },
+    "knowledge": {
+      "eyebrow": "METHODOLOGY",
+      "title": "知识库",
+      "description": "把反复验证过的方法整理成可以跟着做的流程。（占位文案）",
+      "items": [
+        {
+          "index": "01",
+          "name": "方法论占位一",
+          "summary": "这个方法适用于什么场景，核心步骤是什么。",
+          "link": "",
+          "linkText": "阅读全文"
+        },
+        {
+          "index": "02",
+          "name": "方法论占位二",
+          "summary": "这个方法适用于什么场景，核心步骤是什么。",
+          "link": "",
+          "linkText": "阅读全文"
+        },
+        {
+          "index": "03",
+          "name": "方法论占位三",
+          "summary": "这个方法适用于什么场景，核心步骤是什么。",
+          "link": "",
+          "linkText": "阅读全文"
+        },
+        {
+          "index": "04",
+          "name": "方法论占位四",
+          "summary": "这个方法适用于什么场景，核心步骤是什么。",
+          "link": "",
+          "linkText": "阅读全文"
+        }
+      ]
+    },
+    "journey": {
+      "eyebrow": "JOURNEY",
+      "title": "我的升级打怪之路",
+      "description": "不是一条预先规划好的路线。每走一段，我都把当时解决问题的方法留了下来。（占位文案）",
+      "items": [
+        {
+          "time": "20XX.XX — 20XX.XX",
+          "title": "经历占位一",
+          "summary": "这段时间在做什么，做出了什么结果。",
+          "tags": ["关键词一", "关键词二", "关键词三"]
+        },
+        {
+          "time": "20XX.XX — 20XX.XX",
+          "title": "经历占位二",
+          "summary": "这段时间在做什么，做出了什么结果。",
+          "tags": ["关键词一", "关键词二"]
+        },
+        {
+          "time": "20XX.XX — 至今",
+          "title": "经历占位三",
+          "summary": "这段时间在做什么，做出了什么结果。",
+          "tags": ["关键词一", "关键词二", "关键词三"]
+        }
+      ]
+    }
   },
   "footer": {
     "startTime": "2024-04-14T00:00:00Z"
