@@ -31,29 +31,10 @@ function zoom(src: string, title: string) {
 ---
 
 <div class="project-detail" style={accentVar}>
-  <div class="toc-layout mx-auto max-w-[1080px] px-4 md:px-6">
-    {/* 左侧内容导航：位于内容宽度之外（左栏 gutter），sticky */}
-    <aside class="toc-rail">
-      <nav class="toc" id="detail-toc" aria-label="内容导航">
-        <ol>
-          {
-            project.sections.map((s) => (
-              <li>
-                <a class="toc-row" href={`#${s.id}`}>
-                  <span class="toc-no">{s.index}</span>
-                  <span class="toc-label">{s.title}</span>
-                </a>
-              </li>
-            ))
-          }
-        </ol>
-        <a class="toc-back toc-top" href="#" aria-label="回到顶部" title="回到顶部">↑</a>
-      </nav>
-    </aside>
-
-    {/* 右侧：顶部栏（与正文同宽）+ 正文。data-lb-group 让灯箱可在图片间切换 */}
-    <div class="toc-main">
-      <div class="flex items-center justify-between py-5">
+  {/* 顶部导航：sticky 常驻，有效宽度与下方内容区完全一致（共用同一套网格、落在同一列） */}
+  <div class="pd-top sticky top-0 z-30 bg-primary">
+    <div class="pd-grid">
+      <div class="pd-topbar">
         <a
           id="detail-back"
           href={withBase('/#projects')}
@@ -86,13 +67,37 @@ function zoom(src: string, title: string) {
           </div>
         </div>
       </div>
+    </div>
+  </div>
 
+  <div class="pd-grid">
+    {/* 左侧内容导航：位于内容宽度之外（左栏 gutter），sticky */}
+    <aside class="toc-rail">
+      <nav class="toc" id="detail-toc" aria-label="内容导航">
+        <ol>
+          {
+            project.sections.map((s) => (
+              <li>
+                <a class="toc-row" href={`#${s.id}`}>
+                  <span class="toc-no">{s.index}</span>
+                  <span class="toc-label">{s.title}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ol>
+        <a class="toc-back toc-top" href="#" aria-label="回到顶部" title="回到顶部">↑</a>
+      </nav>
+    </aside>
+
+    {/* 右侧：正文。data-lb-group 让灯箱可在图片间切换 */}
+    <div class="toc-main">
       <article data-lb-group>
         <header>
           <div class="font-['Atkinson'] text-sm text-accent/80">{project.index}</div>
           <h1 class="mt-2 text-3xl font-bold md:text-4xl">{project.name}</h1>
           <dl
-            class="mt-6 grid grid-cols-2 gap-x-6 gap-y-4 border-y border-[#191A1D]/10 py-5 text-sm dark:border-white/10"
+            class="pd-measure mt-6 grid grid-cols-2 gap-x-6 gap-y-4 border-y border-[#191A1D]/10 py-5 text-sm dark:border-white/10"
           >
             <div>
               <dt class="text-secondary">角色</dt>
@@ -111,7 +116,7 @@ function zoom(src: string, title: string) {
               <dd class="mt-1">{project.meta.stack}</dd>
             </div>
           </dl>
-          <p class="mt-6 text-lg leading-relaxed text-secondary">{project.intro}</p>
+          <p class="pd-measure mt-6 text-lg leading-relaxed text-secondary">{project.intro}</p>
         </header>
 
         {
@@ -162,39 +167,75 @@ function zoom(src: string, title: string) {
 </div>
 
 <style is:global>
-  /* ===== 布局：左 rail 在内容宽度之外，右 reading 列含顶部栏+正文 ===== */
-  .toc-layout {
+  /* ===== 布局（照抄参考链接几何）=====
+     顶部导航与内容区共用同一套网格：内容都落在中间列（1008px），
+     左右边缘严格对齐；内容导航(TOC)在中间列之外的左栏，不在内容宽度里。 */
+  .pd-grid {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
   }
-  @media (min-width: 1024px) {
-    .toc-layout {
-      grid-template-columns: 1fr minmax(0, 640px) 1fr;
-      column-gap: 48px;
-    }
+  .pd-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    width: 100%;
+    max-width: 712px;
+    margin-inline: auto;
+    padding-inline: 1rem;
   }
   .toc-rail {
     display: none;
   }
-  @media (min-width: 1024px) {
+  .toc-main {
+    min-width: 0;
+    width: 100%;
+    max-width: 712px;
+    margin-inline: auto;
+    padding-inline: 1rem;
+  }
+  /* 文字阅读宽度：媒体铺满内容列，纯文本收窄，与参考页一致 */
+  .pd-measure {
+    max-width: 680px;
+  }
+  @media (min-width: 1200px) {
+    .pd-grid {
+      grid-template-columns: minmax(213px, 1fr) minmax(0, 1008px) minmax(0, 1fr);
+      column-gap: 24px;
+    }
+    .pd-topbar {
+      grid-column: 2;
+      max-width: none;
+      padding-inline: 24px;
+    }
     .toc-rail {
       display: flex;
-      justify-content: flex-end;
-      padding-right: 8px;
+      flex-direction: column;
+      grid-column: 1;
+      justify-self: start;
+      width: 203px;
+      margin-left: 10px;
       position: sticky;
       top: 80px;
       align-self: start;
     }
     .toc-rail .toc {
-      width: 220px;
+      width: 100%;
       max-height: calc(100vh - 96px);
     }
+    .toc-main {
+      grid-column: 2;
+      max-width: none;
+      padding-inline: 24px;
+    }
   }
-  .toc-main {
-    min-width: 0;
-    width: 100%;
-    max-width: 720px;
-    margin: 0 auto;
+
+  /* 详情页隐藏全局固定顶栏（顶部区由上方 sticky 导航承担），并去掉 main 的 64px 预留 */
+  body:has(.project-detail) header.fixed {
+    display: none;
+  }
+  body:has(.project-detail) main {
+    padding-top: 0;
   }
 
   /* ===== 内容导航 TOC ===== */
@@ -543,7 +584,7 @@ function zoom(src: string, title: string) {
   })
 
   // ===== 内容导航：竖线随阅读移动 + 点击平滑滚到 OFFSET =====
-  // 移植自参考链接 chapter-toc.js，OFFSET 清掉本站 64px 固定顶栏 + 间距
+  // 移植自参考链接 chapter-toc.js，OFFSET = sticky 顶栏 64px + 间距
   ;(function () {
     const nav = document.getElementById('detail-toc')
     if (!nav) return
