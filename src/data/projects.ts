@@ -6,6 +6,8 @@
 //   video-text  视频/文字（mediaType: 'video' | 'image'）
 //   run-it      只放视频 / GIF / 图片（顶部和正文里都能用）
 //   gallery     多图网格
+//   before-after 项目前后对比：before/after 两张图，配 Before/After 按钮切换；
+//               可选 beforeLabel/afterLabel（默认 Before/After）、beforeCap/afterCap（按钮下说明）
 // 想换某个项目的主色：加 accent 字段，填十六进制色值，例如 accent: '#2E8B8B'
 
 export type Block =
@@ -27,6 +29,16 @@ export type Block =
     }
   | { type: 'run-it'; media: string; mediaType?: 'video' | 'image'; caption?: string }
   | { type: 'gallery'; images: { src: string; alt: string; caption?: string }[] }
+  | {
+      type: 'before-after'
+      before: string
+      after: string
+      beforeLabel?: string
+      afterLabel?: string
+      beforeCap?: string
+      afterCap?: string
+      caption?: string
+    }
 
 export interface Section {
   index: string // 目录里显示的编号，如 "01"
@@ -90,6 +102,14 @@ export const projects: Project[] = [
             type: 'run-it',
             media: PH,
             caption: 'Run it：两个方案并排跑，让用户自己切换着看。',
+          },
+          {
+            type: 'before-after',
+            before: PH,
+            after: PH,
+            caption: '前后对比：点 Before / After 切换同一屏的改前改后。',
+            beforeCap: '改前：上一版方案的某一屏',
+            afterCap: '改后：这一版把同一屏重做后的样子',
           },
         ],
       },

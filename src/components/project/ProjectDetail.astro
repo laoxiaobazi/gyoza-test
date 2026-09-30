@@ -18,140 +18,516 @@ function hexToRgb(hex: string): string {
   return `${r} ${g} ${b}`
 }
 const accentVar = `--color-accent: ${hexToRgb(project.accent || '#7357B8')}`
+
+// 灯箱：图片用 data-lb 锚点包起来（dialog 灯箱在底部脚本统一处理）
+function zoom(src: string, title: string) {
+  return {
+    href: withBase(src),
+    'data-lb': true,
+    'data-lb-src': withBase(src),
+    'data-lb-title': title,
+  }
+}
 ---
 
 <div class="project-detail" style={accentVar}>
-  {/* 顶部栏：左返回，右更多项目（hover 展开） */}
-  <div class="mx-auto flex max-w-[1100px] items-center justify-between px-4 py-5 md:px-8">
-    <a
-      id="detail-back"
-      href={withBase('/#projects')}
-      class="inline-flex items-center gap-1.5 text-sm text-secondary transition-colors hover:text-accent"
-    >
-      <span aria-hidden="true">←</span> 返回
-    </a>
-
-    <div class="group relative">
-      <button
-        type="button"
-        class="inline-flex items-center gap-1 rounded-full border border-[#191A1D]/20 px-4 py-1.5 text-sm transition-colors hover:border-accent hover:text-accent dark:border-white/20"
-      >
-        更多项目 <span aria-hidden="true">▾</span>
-      </button>
-      <div
-        class="absolute right-0 top-full z-20 mt-2 hidden w-60 rounded-xl border border-[#191A1D]/10 bg-primary p-2 shadow-xl group-hover:block dark:border-white/10"
-      >
-        {
-          others.map((o) => (
-            <a
-              href={withBase('/projects/' + o.slug)}
-              class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-[#EFEEE8] hover:text-accent dark:hover:bg-[#25232E]"
-            >
-              <span class="font-['Atkinson'] opacity-70">{o.index}</span>
-              <span>{o.name}</span>
-            </a>
-          ))
-        }
-      </div>
-    </div>
-  </div>
-
-  {/* 核心两栏：左 TOC，右内容 */}
-  <div class="mx-auto grid max-w-[1100px] grid-cols-1 gap-10 px-4 pb-20 md:px-8 lg:grid-cols-[240px_minmax(0,1fr)]">
-    {/* 左侧内容导航 */}
-    <aside class="hidden lg:block">
-      <nav class="sticky top-24 space-y-1 text-sm" id="detail-toc">
-        {
-          project.sections.map((s) => (
-            <a
-              href={`#${s.id}`}
-              data-toc-link={`#${s.id}`}
-              class="flex items-center gap-2 rounded-lg px-3 py-2 text-secondary transition-colors hover:text-accent"
-            >
-              <span class="font-['Atkinson'] opacity-60">{s.index}</span>
-              <span class="truncate">{s.title}</span>
-            </a>
-          ))
-        }
+  <div class="toc-layout mx-auto max-w-[1080px] px-4 md:px-6">
+    {/* 左侧内容导航：位于内容宽度之外（左栏 gutter），sticky */}
+    <aside class="toc-rail">
+      <nav class="toc" id="detail-toc" aria-label="内容导航">
+        <ol>
+          {
+            project.sections.map((s) => (
+              <li>
+                <a class="toc-row" href={`#${s.id}`}>
+                  <span class="toc-no">{s.index}</span>
+                  <span class="toc-label">{s.title}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ol>
+        <a class="toc-back toc-top" href="#" aria-label="回到顶部" title="回到顶部">↑</a>
       </nav>
     </aside>
 
-    {/* 右侧正文 */}
-    <article class="min-w-0">
-      <header>
-        <div class="font-['Atkinson'] text-sm text-accent/80">{project.index}</div>
-        <h1 class="mt-2 text-3xl font-bold md:text-4xl">{project.name}</h1>
-        <dl
-          class="mt-6 grid grid-cols-2 gap-x-6 gap-y-4 border-y border-[#191A1D]/10 py-5 text-sm dark:border-white/10"
+    {/* 右侧：顶部栏（与正文同宽）+ 正文。data-lb-group 让灯箱可在图片间切换 */}
+    <div class="toc-main">
+      <div class="flex items-center justify-between py-5">
+        <a
+          id="detail-back"
+          href={withBase('/#projects')}
+          class="inline-flex items-center gap-1.5 text-sm text-secondary transition-colors hover:text-accent"
         >
-          <div>
-            <dt class="text-secondary">角色</dt>
-            <dd class="mt-1">{project.meta.role}</dd>
-          </div>
-          <div>
-            <dt class="text-secondary">协作</dt>
-            <dd class="mt-1">{project.meta.with}</dd>
-          </div>
-          <div>
-            <dt class="text-secondary">周期</dt>
-            <dd class="mt-1">{project.meta.timeline}</dd>
-          </div>
-          <div>
-            <dt class="text-secondary">技术栈</dt>
-            <dd class="mt-1">{project.meta.stack}</dd>
-          </div>
-        </dl>
-        <p class="mt-6 text-lg leading-relaxed text-secondary">{project.intro}</p>
-      </header>
+          <span aria-hidden="true">←</span> 返回
+        </a>
 
-      {
-        project.heroRunIt && (
-          <figure class="mt-8">
-            <div class="relative overflow-hidden rounded-2xl border border-[#191A1D]/10 bg-[#EFEEE8] dark:border-white/10 dark:bg-[#25232E]">
-              {project.heroRunIt.mediaType === 'video' ? (
-                <video src={withBase(project.heroRunIt.media)} controls class="w-full" />
-              ) : (
-                <img src={withBase(project.heroRunIt.media)} alt={project.heroRunIt.caption || 'Run it'} class="w-full" />
-              )}
-              {project.heroRunIt.mediaType !== 'video' && (
-                <span class="pointer-events-none absolute inset-0 flex items-center justify-center">
-                  <span class="flex size-14 items-center justify-center rounded-full bg-white/85 text-lg text-accent backdrop-blur dark:bg-black/40">
-                    ▶
+        <div class="group relative">
+          <button
+            type="button"
+            class="inline-flex items-center gap-1 rounded-full border border-[#191A1D]/20 px-4 py-1.5 text-sm transition-colors hover:border-accent hover:text-accent dark:border-white/20"
+          >
+            更多项目 <span aria-hidden="true">▾</span>
+          </button>
+          <div
+            class="absolute right-0 top-full z-20 mt-2 hidden w-60 rounded-xl border border-[#191A1D]/10 bg-primary p-2 shadow-xl group-hover:block dark:border-white/10"
+          >
+            {
+              others.map((o) => (
+                <a
+                  href={withBase('/projects/' + o.slug)}
+                  class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-[#EFEEE8] hover:text-accent dark:hover:bg-[#25232E]"
+                >
+                  <span class="font-['Atkinson'] opacity-70">{o.index}</span>
+                  <span>{o.name}</span>
+                </a>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+
+      <article data-lb-group>
+        <header>
+          <div class="font-['Atkinson'] text-sm text-accent/80">{project.index}</div>
+          <h1 class="mt-2 text-3xl font-bold md:text-4xl">{project.name}</h1>
+          <dl
+            class="mt-6 grid grid-cols-2 gap-x-6 gap-y-4 border-y border-[#191A1D]/10 py-5 text-sm dark:border-white/10"
+          >
+            <div>
+              <dt class="text-secondary">角色</dt>
+              <dd class="mt-1">{project.meta.role}</dd>
+            </div>
+            <div>
+              <dt class="text-secondary">协作</dt>
+              <dd class="mt-1">{project.meta.with}</dd>
+            </div>
+            <div>
+              <dt class="text-secondary">周期</dt>
+              <dd class="mt-1">{project.meta.timeline}</dd>
+            </div>
+            <div>
+              <dt class="text-secondary">技术栈</dt>
+              <dd class="mt-1">{project.meta.stack}</dd>
+            </div>
+          </dl>
+          <p class="mt-6 text-lg leading-relaxed text-secondary">{project.intro}</p>
+        </header>
+
+        {
+          project.heroRunIt && (
+            <figure class="mt-8">
+              <div class="relative overflow-hidden rounded-2xl border border-[#191A1D]/10 bg-[#EFEEE8] dark:border-white/10 dark:bg-[#25232E]">
+                {project.heroRunIt.mediaType === 'video' ? (
+                  <video src={withBase(project.heroRunIt.media)} controls class="w-full" />
+                ) : (
+                  <a {...zoom(project.heroRunIt.media, project.heroRunIt.caption || 'Run it')} class="lb-anchor block">
+                    <img src={withBase(project.heroRunIt.media)} alt={project.heroRunIt.caption || 'Run it'} class="w-full" />
+                  </a>
+                )}
+                {project.heroRunIt.mediaType !== 'video' && (
+                  <span class="pointer-events-none absolute inset-0 flex items-center justify-center">
+                    <span class="flex size-14 items-center justify-center rounded-full bg-white/85 text-lg text-accent backdrop-blur dark:bg-black/40">
+                      ▶
+                    </span>
                   </span>
-                </span>
+                )}
+              </div>
+              {project.heroRunIt.caption && (
+                <figcaption class="mt-2 text-xs text-secondary">
+                  <span class="text-accent">▶ </span>
+                  {project.heroRunIt.caption}
+                </figcaption>
               )}
-            </div>
-            {project.heroRunIt.caption && (
-              <figcaption class="mt-2 text-xs text-secondary">
-                <span class="text-accent">▶ </span>
-                {project.heroRunIt.caption}
-              </figcaption>
-            )}
-          </figure>
-        )
-      }
+            </figure>
+          )
+        }
 
-      {
-        project.sections.map((s) => (
-          <section id={s.id} class="mt-14 scroll-mt-24">
-            <div class="font-['Atkinson'] text-sm text-accent/80">{s.index}</div>
-            <h2 class="mt-1 text-2xl font-bold">{s.title}</h2>
-            <div class="mt-4 space-y-4">
-              {s.blocks.map((b) => (
-                <Block block={b} />
-              ))}
-            </div>
-          </section>
-        ))
-      }
-    </article>
+        {
+          project.sections.map((s) => (
+            <section id={s.id} class="mt-14 scroll-mt-20">
+              <div class="font-['Atkinson'] text-sm text-accent/80">{s.index}</div>
+              <h2 class="mt-1 text-2xl font-bold">{s.title}</h2>
+              <div class="mt-4 space-y-4">
+                {s.blocks.map((b) => (
+                  <Block block={b} />
+                ))}
+              </div>
+            </section>
+          ))
+        }
+      </article>
+    </div>
   </div>
 </div>
 
-<style>
-  .project-detail .toc-active {
+<style is:global>
+  /* ===== 布局：左 rail 在内容宽度之外，右 reading 列含顶部栏+正文 ===== */
+  .toc-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  @media (min-width: 1024px) {
+    .toc-layout {
+      grid-template-columns: 1fr minmax(0, 640px) 1fr;
+      column-gap: 48px;
+    }
+  }
+  .toc-rail {
+    display: none;
+  }
+  @media (min-width: 1024px) {
+    .toc-rail {
+      display: flex;
+      justify-content: flex-end;
+      padding-right: 8px;
+      position: sticky;
+      top: 80px;
+      align-self: start;
+    }
+    .toc-rail .toc {
+      width: 220px;
+      max-height: calc(100vh - 96px);
+    }
+  }
+  .toc-main {
+    min-width: 0;
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  /* ===== 内容导航 TOC ===== */
+  .toc {
+    position: relative;
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+  .toc::-webkit-scrollbar {
+    display: none;
+  }
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0 0 0 2px;
+  }
+  .toc li {
+    margin-bottom: 14px;
+  }
+  .toc-row {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 400;
+    color: rgba(25, 26, 29, 0.55);
+    text-decoration: none;
+    padding-left: 12px;
+    transition:
+      transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+      color 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .toc-no {
+    flex: none;
+    width: 22px;
+    margin-right: 12px;
+    font-variant-numeric: tabular-nums;
+    opacity: 0.9;
+    transition: opacity 220ms;
+  }
+  .toc-label {
+    flex: 1 1 auto;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .toc-row:hover,
+  .toc-row[aria-current] {
+    color: #191a1d;
+    transform: translateX(10px);
+  }
+  .toc-row[aria-current] .toc-no {
+    opacity: 1;
+  }
+  /* 随阅读移动的竖线 */
+  .toc-mark {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 2px;
+    height: 20px;
+    background: rgb(var(--color-accent));
+    border-radius: 2px;
+    transform: translateY(-100px);
+    transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  /* 回到顶部 */
+  .toc-back {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    margin-top: 22px;
+    margin-left: 2px;
+    border: 1px solid rgba(25, 26, 29, 0.5);
+    border-radius: 999px;
+    color: #191a1d;
+    text-decoration: none;
+    font-size: 14px;
+    transition:
+      background-color 0.15s,
+      color 0.15s,
+      border-color 0.15s;
+  }
+  .toc-back:hover {
+    background: rgb(var(--color-accent));
+    color: #fff;
+    border-color: rgb(var(--color-accent));
+  }
+
+  /* ===== before / after 对比切换 ===== */
+  .cmp-head {
+    margin-top: 1.5rem;
+  }
+  .cmp-title {
+    margin: 0 0 0.6rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.75rem;
+    line-height: 1.5;
+    color: rgba(25, 26, 29, 0.55);
+  }
+  .live-steps.cmp-steps {
+    display: inline-flex;
+    border: 1px solid rgba(25, 26, 29, 0.15);
+    border-radius: 999px;
+    padding: 3px;
+  }
+  .cmp-btn {
+    position: relative;
+    display: block;
+    background: none;
+    border: 0;
+    font: inherit;
+    padding: 0.35rem 1rem;
+    border-radius: 999px;
+    color: rgba(25, 26, 29, 0.55);
+    cursor: pointer;
+    transition:
+      background-color 0.15s,
+      color 0.15s;
+  }
+  .cmp-btn b {
+    display: block;
+    font-weight: 600;
+    font-size: 0.875rem;
+  }
+  .cmp-cap {
+    position: absolute;
+    left: 0;
+    top: 100%;
+    margin-top: 0.5rem;
+    white-space: nowrap;
+    font-size: 0.75rem;
+    color: rgba(25, 26, 29, 0.55);
+    opacity: 0;
+    transform: translateY(-4px);
+    transition:
+      opacity 0.15s,
+      transform 0.15s;
+    pointer-events: none;
+  }
+  .cmp-btn.is-active {
+    background: rgb(var(--color-accent) / 0.12);
     color: rgb(var(--color-accent));
-    background: rgb(var(--color-accent) / 0.08);
+  }
+  .cmp-btn.is-active .cmp-cap {
+    opacity: 1;
+    transform: none;
+  }
+  .ba-stage img {
+    transition: opacity 0.15s ease;
+  }
+
+  /* ===== 灯箱（原生 dialog，照抄参考链接观感） ===== */
+  .lb-anchor {
+    cursor: zoom-in;
+  }
+  .lb {
+    width: min(1180px, calc(100vw - 2rem));
+    height: min(820px, calc(100vh - 2rem));
+    max-width: none;
+    max-height: none;
+    margin: auto;
+    padding: 0;
+    border: 0;
+    border-radius: 12px;
+    background: #fff;
+    color: #191a1d;
+    box-shadow: 0 30px 80px -20px rgba(12, 19, 27, 0.45);
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+  }
+  .lb:not([open]) {
+    display: none;
+  }
+  .lb::backdrop {
+    background: rgba(12, 19, 27, 0.55);
+    backdrop-filter: blur(2px);
+  }
+  .lb[open] {
+    animation: lb-in 0.22s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  @keyframes lb-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px) scale(0.99);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  .lb-top {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.8rem 0.8rem 0.8rem 1.25rem;
+    border-bottom: 1px solid rgba(25, 26, 29, 0.1);
+  }
+  .lb .lb-title {
+    margin: 0;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    flex: 1;
+    min-width: 0;
+  }
+  .lb-count {
+    font-size: 0.8125rem;
+    color: rgba(25, 26, 29, 0.55);
+    font-variant-numeric: tabular-nums;
+  }
+  .lb button {
+    font: inherit;
+    cursor: pointer;
+  }
+  .lb-close {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    border: 1px solid rgba(25, 26, 29, 0.2);
+    background: #fff;
+    font-size: 1.25rem;
+    line-height: 1;
+    color: #191a1d;
+  }
+  .lb-close:hover {
+    border-color: rgb(var(--color-accent));
+  }
+  .lb-stage {
+    position: relative;
+    min-height: 0;
+    padding: 1rem 3.75rem;
+    background: #f6f7f9;
+    overflow: hidden;
+  }
+  .lb-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  .lb-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    border: 1px solid rgba(25, 26, 29, 0.2);
+    background: #fff;
+    color: #191a1d;
+    font-size: 1rem;
+  }
+  .lb-prev {
+    left: 0.75rem;
+  }
+  .lb-next {
+    right: 0.75rem;
+  }
+  .lb-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.9rem 1.25rem;
+    border-top: 1px solid rgba(25, 26, 29, 0.1);
+    flex-wrap: wrap;
+  }
+  .lb-text {
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: #191a1d;
+    max-width: 44rem;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .toc-row {
+      color: rgba(237, 237, 237, 0.55);
+    }
+    .toc-row:hover,
+    .toc-row[aria-current] {
+      color: #ededed;
+    }
+    .toc-back {
+      border-color: rgba(237, 237, 237, 0.5);
+      color: #ededed;
+    }
+    .cmp-title,
+    .cmp-btn,
+    .cmp-cap {
+      color: rgba(237, 237, 237, 0.6);
+    }
+    .live-steps.cmp-steps {
+      border-color: rgba(255, 255, 255, 0.18);
+    }
+    .cmp-btn.is-active {
+      background: rgb(var(--color-accent) / 0.18);
+      color: rgb(var(--color-accent));
+    }
+    .lb {
+      background: #1b1a21;
+      color: #ededed;
+    }
+    .lb-top,
+    .lb-foot {
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+    .lb-stage {
+      background: #23222b;
+    }
+    .lb-close,
+    .lb-nav {
+      background: #2a2932;
+      border-color: rgba(255, 255, 255, 0.18);
+      color: #ededed;
+    }
+    .lb-close:hover,
+    .lb-nav:hover {
+      border-color: rgb(var(--color-accent));
+    }
+    .lb-text,
+    .lb-count {
+      color: rgba(237, 237, 237, 0.7);
+    }
+  }
+
+  .lb-open {
+    overflow: hidden;
   }
 </style>
 
@@ -166,31 +542,255 @@ const accentVar = `--color-accent: ${hexToRgb(project.accent || '#7357B8')}`
     }
   })
 
-  // TOC 滚动高亮（scroll-spy）
-  const links = Array.from(
-    document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]'),
-  )
-  if (links.length && 'IntersectionObserver' in window) {
-    const obs = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            links.forEach((l) => l.classList.remove('toc-active'))
-            const active = document.querySelector(
-              `[data-toc-link="#${entry.target.id}"]`,
-            )
-            active?.classList.add('toc-active')
-          }
+  // ===== 内容导航：竖线随阅读移动 + 点击平滑滚到 OFFSET =====
+  // 移植自参考链接 chapter-toc.js，OFFSET 清掉本站 64px 固定顶栏 + 间距
+  ;(function () {
+    const nav = document.getElementById('detail-toc')
+    if (!nav) return
+
+    const OFFSET = 80
+    const pairs = Array.prototype.slice
+      .call(nav.querySelectorAll('li > a[href^="#"]'))
+      .map((a) => ({
+        link: a,
+        heading: document.getElementById(decodeURIComponent(a.hash.slice(1))),
+      }))
+      .filter((p) => p.heading) as { link: HTMLAnchorElement; heading: HTMLElement }[]
+    if (!pairs.length) return
+
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)')
+    let current: any = null
+    let traveling = false
+
+    const line = document.createElement('span')
+    line.className = 'toc-mark'
+    line.setAttribute('aria-hidden', 'true')
+    nav.appendChild(line)
+
+    const rowCentre = (i: number) => {
+      const a = pairs[i].link
+      return a.offsetTop + a.offsetHeight / 2
+    }
+    const place = (y: number) => {
+      line.style.transform = 'translateY(' + (y - 10) + 'px)'
+      line.classList.add('is-on')
+    }
+    const mark = (p: any) => {
+      if (p === current) return
+      if (current) current.link.removeAttribute('aria-current')
+      current = p
+      p.link.setAttribute('aria-current', 'location')
+      if (!traveling) place(rowCentre(pairs.indexOf(p)))
+    }
+    const update = () => {
+      if (traveling) return
+      let active = pairs[0]
+      for (let i = 0; i < pairs.length; i++) {
+        if (pairs[i].heading.getBoundingClientRect().top <= OFFSET + 1) active = pairs[i]
+        else break
+      }
+      mark(active)
+    }
+
+    let io: IntersectionObserver | null = null
+    const observe = () => {
+      if (io) io.disconnect()
+      io = new IntersectionObserver(update, {
+        rootMargin: '100000px 0px ' + -(window.innerHeight - OFFSET - 1) + 'px 0px',
+      })
+      pairs.forEach((p) => io!.observe(p.heading))
+    }
+    observe()
+    window.addEventListener('resize', observe)
+    update()
+
+    const INPUTS = ['wheel', 'touchstart', 'keydown', 'mousedown']
+    const easeOut = (t: number) => 1 - Math.pow(1 - t, 3)
+    const nearestRow = (y: number) => {
+      let best = 0
+      for (let i = 1; i < pairs.length; i++) {
+        if (Math.abs(rowCentre(i) - y) < Math.abs(rowCentre(best) - y)) best = i
+      }
+      return pairs[best]
+    }
+    let run: any = null
+    const step = (now: number) => {
+      if (!run) return
+      if (run.start === null) run.start = now
+      const t = Math.min(1, (now - run.start) / run.duration)
+      const e = easeOut(t)
+      window.scrollTo(0, run.from + (run.to - run.from) * e)
+      const y = run.lineFrom + (run.lineTo - run.lineFrom) * e
+      place(y)
+      mark(nearestRow(y))
+      if (t < 1) run.frame = requestAnimationFrame(step)
+      else stop()
+    }
+    const stop = () => {
+      if (!run) return
+      cancelAnimationFrame(run.frame)
+      run = null
+      INPUTS.forEach((type) => window.removeEventListener(type, stop, true))
+      traveling = false
+      nav.classList.remove('is-traveling')
+      current = null
+      update()
+    }
+    const go = (top: number, p: any) => {
+      top = Math.max(0, Math.min(top, document.documentElement.scrollHeight - window.innerHeight))
+      const from = window.scrollY
+      const distance = Math.abs(top - from)
+      if (run) cancelAnimationFrame(run.frame)
+      if (reduce.matches || distance < 2) {
+        run = null
+        window.scrollTo(0, top)
+        if (traveling) {
+          traveling = false
+          nav.classList.remove('is-traveling')
         }
-      },
-      { rootMargin: '-80px 0px -70% 0px', threshold: 0 },
-    )
-    project_sections()
-    function project_sections() {
-      links.forEach((l) => {
-        const el = document.getElementById(l.getAttribute('href')!.slice(1))
-        if (el) obs.observe(el)
+        update()
+        return
+      }
+      const lineFrom = new DOMMatrix(getComputedStyle(line).transform).m42 + 10
+      if (!traveling) {
+        traveling = true
+        nav.classList.add('is-traveling')
+        INPUTS.forEach((type) => window.addEventListener(type, stop, { capture: true, passive: true }))
+      }
+      run = {
+        from,
+        to: top,
+        start: null,
+        frame: 0,
+        lineFrom,
+        lineTo: rowCentre(pairs.indexOf(p)),
+        duration: Math.min(650, Math.max(350, 250 + distance / 10)),
+      }
+      run.frame = requestAnimationFrame(step)
+    }
+
+    nav.addEventListener('click', (ev: Event) => {
+      const e = ev as MouseEvent
+      const a = (e.target as HTMLElement).closest('a')
+      if (!a) return
+      e.preventDefault()
+      if (a.classList.contains('toc-top')) {
+        history.replaceState(null, '', location.pathname + location.search)
+        go(0, pairs[0])
+        return
+      }
+      const p = pairs.filter((q) => q.link === a)[0]
+      if (!p) return
+      history.replaceState(null, '', a.hash)
+      if (!p.heading.hasAttribute('tabindex')) p.heading.setAttribute('tabindex', '-1')
+      p.heading.focus({ preventScroll: true })
+      go(p.heading.getBoundingClientRect().top + window.scrollY - OFFSET, p)
+    })
+  })()
+
+  // ===== before / after 切换 =====
+  document.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest('.cmp-btn') as HTMLButtonElement | null
+    if (!btn) return
+    const steps = btn.closest('.cmp-steps')
+    if (!steps) return
+    e.preventDefault()
+    steps.querySelectorAll('.cmp-btn').forEach((b) => b.classList.remove('is-active'))
+    btn.classList.add('is-active')
+    const wrap = steps.closest('.cmp-wrap') as HTMLElement | null
+    if (!wrap) return
+    const img = wrap.querySelector('.ba-img') as HTMLImageElement | null
+    if (!img) return
+    const which = btn.getAttribute('data-ba')
+    const src = which === 'after' ? img.getAttribute('data-after') : img.getAttribute('data-before')
+    const cap = (btn.querySelector('.cmp-cap') as HTMLElement | null)?.textContent || ''
+    if (!src) return
+    img.style.opacity = '0'
+    setTimeout(() => {
+      img.src = src
+      img.style.opacity = '1'
+      const anchor = img.closest('a[data-lb]') as HTMLElement | null
+      if (anchor) {
+        anchor.setAttribute('data-lb-src', src)
+        anchor.setAttribute('data-lb-title', cap)
+      }
+    }, 130)
+  })
+
+  // ===== 灯箱（原生 dialog，移植自参考链接 lightbox.js）=====
+  ;(function () {
+    let dlg: any = null
+    let group: any[] = []
+    let at = 0
+    let opener: any = null
+
+    const build = () => {
+      dlg = document.createElement('dialog')
+      dlg.className = 'lb'
+      dlg.setAttribute('aria-label', '图片查看')
+      dlg.innerHTML =
+        '<div class="lb-top"><p class="lb-title"></p><span class="lb-count"></span>' +
+        '<button type="button" class="lb-close" aria-label="关闭">&times;</button></div>' +
+        '<div class="lb-stage"><button type="button" class="lb-nav lb-prev" aria-label="上一张">&larr;</button>' +
+        '<img class="lb-img" alt=""><button type="button" class="lb-nav lb-next" aria-label="下一张">&rarr;</button></div>' +
+        '<div class="lb-foot"><p class="lb-text"></p></div>'
+      document.body.appendChild(dlg)
+      dlg.addEventListener('click', (ev: any) => {
+        if (ev.target === dlg) return close()
+        const b = ev.target.closest('button')
+        if (!b) return
+        if (b.classList.contains('lb-close')) close()
+        else if (b.classList.contains('lb-prev')) show(at - 1)
+        else if (b.classList.contains('lb-next')) show(at + 1)
+      })
+      dlg.addEventListener('keydown', (ev: any) => {
+        if (ev.key === 'ArrowLeft') {
+          show(at - 1)
+          ev.preventDefault()
+        } else if (ev.key === 'ArrowRight') {
+          show(at + 1)
+          ev.preventDefault()
+        }
+      })
+      dlg.addEventListener('close', () => {
+        document.documentElement.classList.remove('lb-open')
+        if (opener) opener.focus()
       })
     }
-  }
+
+    const show = (i: number) => {
+      at = (i + group.length) % group.length
+      const el = group[at]
+      const img = dlg.querySelector('.lb-img')
+      img.src = el.getAttribute('data-lb-src')
+      img.alt = el.getAttribute('data-lb-title') || ''
+      dlg.querySelector('.lb-title').textContent = el.getAttribute('data-lb-title') || ''
+      dlg.querySelector('.lb-text').textContent = el.getAttribute('data-lb-text') || ''
+      dlg.querySelector('.lb-count').textContent =
+        group.length > 1 ? at + 1 + ' / ' + group.length : ''
+      const multi = group.length > 1
+      Array.prototype.forEach.call(dlg.querySelectorAll('.lb-nav'), (b: any) => (b.hidden = !multi))
+    }
+
+    const open = (el: any) => {
+      if (!dlg) build()
+      const g = el.closest('[data-lb-group]')
+      group = g ? Array.prototype.slice.call(g.querySelectorAll('[data-lb]')) : [el]
+      opener = el
+      show(group.indexOf(el))
+      document.documentElement.classList.add('lb-open')
+      dlg.showModal()
+    }
+
+    const close = () => {
+      if (dlg && dlg.open) dlg.close()
+    }
+
+    document.addEventListener('click', (ev: any) => {
+      const el = ev.target.closest('[data-lb]')
+      if (!el || (dlg && dlg.contains(el))) return
+      ev.preventDefault()
+      open(el)
+    })
+  })()
 </script>

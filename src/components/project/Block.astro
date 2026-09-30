@@ -6,6 +6,16 @@ interface Props {
   block: Block
 }
 const { block } = Astro.props
+
+// 灯箱：把图片用 data-lb 锚点包起来（dialog 灯箱在 ProjectDetail 里统一处理）
+function zoom(src: string, title: string) {
+  return {
+    href: withBase(src),
+    'data-lb': true,
+    'data-lb-src': withBase(src),
+    'data-lb-title': title,
+  }
+}
 ---
 
 {
@@ -20,11 +30,13 @@ const { block } = Astro.props
       class={`mt-8 flex flex-col gap-5 items-start md:flex-row ${block.imageSide === 'right' ? 'md:flex-row-reverse' : ''}`}
     >
       <figure class="w-full md:w-1/2">
-        <img
-          src={withBase(block.image)}
-          alt={block.alt}
-          class="w-full rounded-xl border border-[#191A1D]/10 dark:border-white/10"
-        />
+        <a {...zoom(block.image, block.alt)} class="lb-anchor block">
+          <img
+            src={withBase(block.image)}
+            alt={block.alt}
+            class="w-full rounded-xl border border-[#191A1D]/10 dark:border-white/10"
+          />
+        </a>
         {block.caption && (
           <figcaption class="mt-2 text-xs text-secondary">{block.caption}</figcaption>
         )}
@@ -47,11 +59,13 @@ const { block } = Astro.props
             class="w-full rounded-xl border border-[#191A1D]/10 dark:border-white/10"
           />
         ) : (
-          <img
-            src={withBase(block.media)}
-            alt={block.caption || '视频 / GIF'}
-            class="w-full rounded-xl border border-[#191A1D]/10 dark:border-white/10"
-          />
+          <a {...zoom(block.media, block.caption || '视频 / GIF')} class="lb-anchor block">
+            <img
+              src={withBase(block.media)}
+              alt={block.caption || '视频 / GIF'}
+              class="w-full rounded-xl border border-[#191A1D]/10 dark:border-white/10"
+            />
+          </a>
         )}
         {block.caption && (
           <figcaption class="mt-2 text-xs text-secondary">{block.caption}</figcaption>
@@ -69,7 +83,9 @@ const { block } = Astro.props
         {block.mediaType === 'video' ? (
           <video src={withBase(block.media)} controls class="w-full" />
         ) : (
-          <img src={withBase(block.media)} alt={block.caption || 'Run it'} class="w-full" />
+          <a {...zoom(block.media, block.caption || 'Run it')} class="lb-anchor block">
+            <img src={withBase(block.media)} alt={block.caption || 'Run it'} class="w-full" />
+          </a>
         )}
         {block.mediaType !== 'video' && (
           <span class="pointer-events-none absolute inset-0 flex items-center justify-center">
@@ -92,18 +108,53 @@ const { block } = Astro.props
 {
   block.type === 'gallery' && (
     <div class="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3">
-      {block.images.map((img) => (
-        <figure>
+      {
+        block.images.map((img) => (
+          <figure>
+            <a {...zoom(img.src, img.alt)} class="lb-anchor block">
+              <img
+                src={withBase(img.src)}
+                alt={img.alt}
+                class="w-full rounded-xl border border-[#191A1D]/10 dark:border-white/10"
+              />
+            </a>
+            {img.caption && (
+              <figcaption class="mt-1.5 text-xs text-secondary">{img.caption}</figcaption>
+            )}
+          </figure>
+        ))
+      }
+    </div>
+  )
+}
+
+{
+  block.type === 'before-after' && (
+    <div class="mt-8 cmp-wrap">
+      <div class="cmp-head">
+        {block.caption && <p class="cmp-title">{block.caption}</p>}
+        <div class="live-steps cmp-steps">
+          <button type="button" class="cmp-btn is-active" data-ba="before">
+            <b>{block.beforeLabel || 'Before'}</b>
+            <span class="cmp-cap">{block.beforeCap}</span>
+          </button>
+          <button type="button" class="cmp-btn" data-ba="after">
+            <b>{block.afterLabel || 'After'}</b>
+            <span class="cmp-cap">{block.afterCap}</span>
+          </button>
+        </div>
+      </div>
+      <div class="ba-stage mt-4">
+        <a {...zoom(block.before, block.beforeCap || 'Before')} class="lb-anchor block">
           <img
-            src={withBase(img.src)}
-            alt={img.alt}
-            class="w-full rounded-xl border border-[#191A1D]/10 dark:border-white/10"
+            class="ba-img w-full rounded-xl border border-[#191A1D]/10 dark:border-white/10"
+            data-before={withBase(block.before)}
+            data-after={withBase(block.after)}
+            src={withBase(block.before)}
+            alt={block.beforeCap || 'Before'}
           />
-          {img.caption && (
-            <figcaption class="mt-1.5 text-xs text-secondary">{img.caption}</figcaption>
-          )}
-        </figure>
-      ))}
+        </a>
+      </div>
     </div>
   )
 }
