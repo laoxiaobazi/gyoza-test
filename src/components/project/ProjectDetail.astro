@@ -1,0 +1,196 @@
+---
+import type { Project } from '@/data/projects'
+import { withBase } from '@/utils/base'
+import Block from './Block.astro'
+
+interface Props {
+  project: Project
+  others: Project[]
+}
+const { project, others } = Astro.props
+
+// 把十六进制色值转成 "r g b"，用于覆盖 --color-accent（站点 accent 是 rgb 变量）
+function hexToRgb(hex: string): string {
+  const h = hex.replace('#', '')
+  const r = parseInt(h.slice(0, 2), 16)
+  const g = parseInt(h.slice(2, 4), 16)
+  const b = parseInt(h.slice(4, 6), 16)
+  return `${r} ${g} ${b}`
+}
+const accentVar = `--color-accent: ${hexToRgb(project.accent || '#7357B8')}`
+---
+
+<div class="project-detail" style={accentVar}>
+  {/* 顶部栏：左返回，右更多项目（hover 展开） */}
+  <div class="mx-auto flex max-w-[1100px] items-center justify-between px-4 py-5 md:px-8">
+    <a
+      id="detail-back"
+      href={withBase('/#projects')}
+      class="inline-flex items-center gap-1.5 text-sm text-secondary transition-colors hover:text-accent"
+    >
+      <span aria-hidden="true">←</span> 返回
+    </a>
+
+    <div class="group relative">
+      <button
+        type="button"
+        class="inline-flex items-center gap-1 rounded-full border border-[#191A1D]/20 px-4 py-1.5 text-sm transition-colors hover:border-accent hover:text-accent dark:border-white/20"
+      >
+        更多项目 <span aria-hidden="true">▾</span>
+      </button>
+      <div
+        class="absolute right-0 top-full z-20 mt-2 hidden w-60 rounded-xl border border-[#191A1D]/10 bg-primary p-2 shadow-xl group-hover:block dark:border-white/10"
+      >
+        {
+          others.map((o) => (
+            <a
+              href={withBase('/projects/' + o.slug)}
+              class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-[#EFEEE8] hover:text-accent dark:hover:bg-[#25232E]"
+            >
+              <span class="font-['Atkinson'] opacity-70">{o.index}</span>
+              <span>{o.name}</span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+
+  {/* 核心两栏：左 TOC，右内容 */}
+  <div class="mx-auto grid max-w-[1100px] grid-cols-1 gap-10 px-4 pb-20 md:px-8 lg:grid-cols-[240px_minmax(0,1fr)]">
+    {/* 左侧内容导航 */}
+    <aside class="hidden lg:block">
+      <nav class="sticky top-24 space-y-1 text-sm" id="detail-toc">
+        {
+          project.sections.map((s) => (
+            <a
+              href={`#${s.id}`}
+              data-toc-link={`#${s.id}`}
+              class="flex items-center gap-2 rounded-lg px-3 py-2 text-secondary transition-colors hover:text-accent"
+            >
+              <span class="font-['Atkinson'] opacity-60">{s.index}</span>
+              <span class="truncate">{s.title}</span>
+            </a>
+          ))
+        }
+      </nav>
+    </aside>
+
+    {/* 右侧正文 */}
+    <article class="min-w-0">
+      <header>
+        <div class="font-['Atkinson'] text-sm text-accent/80">{project.index}</div>
+        <h1 class="mt-2 text-3xl font-bold md:text-4xl">{project.name}</h1>
+        <dl
+          class="mt-6 grid grid-cols-2 gap-x-6 gap-y-4 border-y border-[#191A1D]/10 py-5 text-sm dark:border-white/10"
+        >
+          <div>
+            <dt class="text-secondary">角色</dt>
+            <dd class="mt-1">{project.meta.role}</dd>
+          </div>
+          <div>
+            <dt class="text-secondary">协作</dt>
+            <dd class="mt-1">{project.meta.with}</dd>
+          </div>
+          <div>
+            <dt class="text-secondary">周期</dt>
+            <dd class="mt-1">{project.meta.timeline}</dd>
+          </div>
+          <div>
+            <dt class="text-secondary">技术栈</dt>
+            <dd class="mt-1">{project.meta.stack}</dd>
+          </div>
+        </dl>
+        <p class="mt-6 text-lg leading-relaxed text-secondary">{project.intro}</p>
+      </header>
+
+      {
+        project.heroRunIt && (
+          <figure class="mt-8">
+            <div class="relative overflow-hidden rounded-2xl border border-[#191A1D]/10 bg-[#EFEEE8] dark:border-white/10 dark:bg-[#25232E]">
+              {project.heroRunIt.mediaType === 'video' ? (
+                <video src={withBase(project.heroRunIt.media)} controls class="w-full" />
+              ) : (
+                <img src={withBase(project.heroRunIt.media)} alt={project.heroRunIt.caption || 'Run it'} class="w-full" />
+              )}
+              {project.heroRunIt.mediaType !== 'video' && (
+                <span class="pointer-events-none absolute inset-0 flex items-center justify-center">
+                  <span class="flex size-14 items-center justify-center rounded-full bg-white/85 text-lg text-accent backdrop-blur dark:bg-black/40">
+                    ▶
+                  </span>
+                </span>
+              )}
+            </div>
+            {project.heroRunIt.caption && (
+              <figcaption class="mt-2 text-xs text-secondary">
+                <span class="text-accent">▶ </span>
+                {project.heroRunIt.caption}
+              </figcaption>
+            )}
+          </figure>
+        )
+      }
+
+      {
+        project.sections.map((s) => (
+          <section id={s.id} class="mt-14 scroll-mt-24">
+            <div class="font-['Atkinson'] text-sm text-accent/80">{s.index}</div>
+            <h2 class="mt-1 text-2xl font-bold">{s.title}</h2>
+            <div class="mt-4 space-y-4">
+              {s.blocks.map((b) => (
+                <Block block={b} />
+              ))}
+            </div>
+          </section>
+        ))
+      }
+    </article>
+  </div>
+</div>
+
+<style>
+  .project-detail .toc-active {
+    color: rgb(var(--color-accent));
+    background: rgb(var(--color-accent) / 0.08);
+  }
+</style>
+
+<script>
+  // 返回：站内进来用 history.back()，否则回项目列表
+  const back = document.getElementById('detail-back')
+  back?.addEventListener('click', (e) => {
+    const ref = document.referrer
+    if (ref && ref.includes(location.host) && ref !== location.href) {
+      e.preventDefault()
+      history.back()
+    }
+  })
+
+  // TOC 滚动高亮（scroll-spy）
+  const links = Array.from(
+    document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]'),
+  )
+  if (links.length && 'IntersectionObserver' in window) {
+    const obs = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            links.forEach((l) => l.classList.remove('toc-active'))
+            const active = document.querySelector(
+              `[data-toc-link="#${entry.target.id}"]`,
+            )
+            active?.classList.add('toc-active')
+          }
+        }
+      },
+      { rootMargin: '-80px 0px -70% 0px', threshold: 0 },
+    )
+    project_sections()
+    function project_sections() {
+      links.forEach((l) => {
+        const el = document.getElementById(l.getAttribute('href')!.slice(1))
+        if (el) obs.observe(el)
+      })
+    }
+  }
+</script>

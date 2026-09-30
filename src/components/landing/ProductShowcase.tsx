@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import clsx from 'clsx'
+import { withBase } from '@/utils/base'
 
 interface TerminalConfig {
   backTitle: string
@@ -118,7 +119,7 @@ function ProjectDetail({ item }: { item: ProjectItem }) {
         </div>
         {item.link && (
           <a
-            href={item.link}
+            href={withBase(item.link)}
             target={item.link.startsWith('http') ? '_blank' : undefined}
             rel={item.link.startsWith('http') ? 'noopener noreferrer' : undefined}
             className="inline-flex items-center gap-1.5 mt-6 text-sm text-accent hover:underline underline-offset-4"

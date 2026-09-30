@@ -1,0 +1,21 @@
+---
+import PageLayout from '@/layouts/PageLayout.astro'
+import ProjectDetail from '@/components/project/ProjectDetail.astro'
+import { projects } from '@/data/projects'
+
+export function getStaticPaths() {
+  return projects.map((project) => ({
+    params: { slug: project.slug },
+    props: {
+      project,
+      others: projects.filter((p) => p.slug !== project.slug),
+    },
+  }))
+}
+
+const { project, others } = Astro.props
+---
+
+<PageLayout title={project.name} description={project.summary}>
+  <ProjectDetail project={project} others={others} />
+</PageLayout>

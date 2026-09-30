@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="1200" height="675" role="img" aria-label="占位图">
+  <rect width="1200" height="675" fill="#E7E5DF"/>
+  <rect x="2" y="2" width="1196" height="671" fill="none" stroke="#C9C5BC" stroke-width="2" stroke-dasharray="10 8"/>
+  <text x="600" y="322" font-family="'Noto Sans SC',sans-serif" font-size="36" fill="#9A958A" text-anchor="middle">占位图 / Placeholder</text>
+  <text x="600" y="366" font-family="'Noto Sans SC',sans-serif" font-size="20" fill="#B4AFA4" text-anchor="middle">替换为你的素材（图片 / GIF / 视频）</text>
+</svg>

@@ -1,7 +1,8 @@
 ---
 import { landing, hero } from '@/config.json'
+import { withBase } from '@/utils/base'
 
-const { name, focus, tagline, typewriter } = landing.hero
+const { name, focus, tagline } = landing.hero
 ---
 
 <section id="hero" class="max-w-[1100px] mx-auto px-4 md:px-8 pt-6 pb-10 md:pt-10 md:pb-16">
@@ -40,7 +41,7 @@ const { name, focus, tagline, typewriter } = landing.hero
     {
       landing.projects.items.slice(0, 3).map((item) => (
         <a
-          href="#projects"
+          href={withBase('/projects/' + (item.slug || ''))}
           class="group block rounded-2xl border border-[#191A1D]/20 hover:border-[#191A1D]/60 dark:border-white/20 dark:hover:border-white/60 bg-transparent p-5 transition-all hover:-translate-y-1"
         >
           <span class="text-sm font-bold text-accent font-['Atkinson']">{item.index}</span>
