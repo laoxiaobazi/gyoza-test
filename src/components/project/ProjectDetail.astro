@@ -20,12 +20,15 @@ function hexToRgb(hex: string): string {
 const accentVar = `--color-accent: ${hexToRgb(project.accent || '#7357B8')}`
 
 // 灯箱：图片用 data-lb 锚点包起来（dialog 灯箱在底部脚本统一处理）
-function zoom(src: string, title: string) {
+// data-no-swup 必须加：swup 不检查 preventDefault，不加它会把点击抢走去加载原始图片
+function zoom(src: string, title: string, text?: string) {
   return {
     href: withBase(src),
     'data-lb': true,
     'data-lb-src': withBase(src),
     'data-lb-title': title,
+    'data-lb-text': text || '',
+    'data-no-swup': true,
   }
 }
 ---
@@ -90,9 +93,10 @@ function zoom(src: string, title: string) {
       </nav>
     </aside>
 
-    {/* 右侧：正文。data-lb-group 让灯箱可在图片间切换 */}
+    {/* 右侧：正文。注意：data-lb-group 放在每个图片区域自己的容器里（见 Block.astro），
+        同区域图片（如画廊 4 张）才会在组内切换，不同区域互不串组 */}
     <div class="toc-main">
-      <article data-lb-group>
+      <article>
         <header>
           <div class="font-['Atkinson'] text-sm text-accent/80">{project.index}</div>
           <h1 class="mt-2 text-3xl font-bold md:text-4xl">{project.name}</h1>
@@ -121,12 +125,12 @@ function zoom(src: string, title: string) {
 
         {
           project.heroRunIt && (
-            <figure class="mt-8">
+            <figure class="mt-8" data-lb-group>
               <div class="relative overflow-hidden rounded-2xl border border-[#191A1D]/10 bg-[#EFEEE8] dark:border-white/10 dark:bg-[#25232E]">
                 {project.heroRunIt.mediaType === 'video' ? (
                   <video src={withBase(project.heroRunIt.media)} controls class="w-full" />
                 ) : (
-                  <a {...zoom(project.heroRunIt.media, project.heroRunIt.caption || 'Run it')} class="lb-anchor block">
+                  <a {...zoom(project.heroRunIt.media, project.heroRunIt.caption || 'Run it', project.heroRunIt.caption)} class="lb-anchor block">
                     <img src={withBase(project.heroRunIt.media)} alt={project.heroRunIt.caption || 'Run it'} class="w-full" />
                   </a>
                 )}
@@ -480,6 +484,7 @@ function zoom(src: string, title: string) {
     width: 100%;
     height: 100%;
     object-fit: contain;
+    filter: drop-shadow(0 0 0.5px rgba(12, 19, 27, 0.35));
   }
   .lb-nav {
     position: absolute;
@@ -730,7 +735,9 @@ function zoom(src: string, title: string) {
   })()
 
   // ===== before / after 切换 =====
-  document.addEventListener('click', (e) => {
+  if (!(window as any).__detailCompareBound) {
+    ;(window as any).__detailCompareBound = true
+    document.addEventListener('click', (e) => {
     const btn = (e.target as HTMLElement).closest('.cmp-btn') as HTMLButtonElement | null
     if (!btn) return
     const steps = btn.closest('.cmp-steps')
@@ -757,9 +764,13 @@ function zoom(src: string, title: string) {
       }
     }, 130)
   })
+  }
 
   // ===== 灯箱（原生 dialog，移植自参考链接 lightbox.js）=====
   ;(function () {
+    // 幂等保护：swup 过渡会重复执行本脚本，不兜住会堆出多个 dialog / 多个监听器
+    if ((window as any).__detailLightboxBound) return
+    ;(window as any).__detailLightboxBound = true
     let dlg: any = null
     let group: any[] = []
     let at = 0
@@ -827,11 +838,16 @@ function zoom(src: string, title: string) {
       if (dlg && dlg.open) dlg.close()
     }
 
-    document.addEventListener('click', (ev: any) => {
-      const el = ev.target.closest('[data-lb]')
-      if (!el || (dlg && dlg.contains(el))) return
-      ev.preventDefault()
-      open(el)
-    })
+    // capture 阶段拦截：抢在 swup 与其它全局监听之前 preventDefault，杜绝跳转到原始图片
+    document.addEventListener(
+      'click',
+      (ev: any) => {
+        const el = ev.target.closest('[data-lb]')
+        if (!el || (dlg && dlg.contains(el))) return
+        ev.preventDefault()
+        open(el)
+      },
+      true
+    )
   })()
 </script>

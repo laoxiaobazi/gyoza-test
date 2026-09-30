@@ -8,12 +8,15 @@ interface Props {
 const { block } = Astro.props
 
 // 灯箱：把图片用 data-lb 锚点包起来（dialog 灯箱在 ProjectDetail 里统一处理）
-function zoom(src: string, title: string) {
+// data-no-swup 必须加：否则 swup 会抢走点击、整页跳转到原始图片
+function zoom(src: string, title: string, text?: string) {
   return {
     href: withBase(src),
     'data-lb': true,
     'data-lb-src': withBase(src),
     'data-lb-title': title,
+    'data-lb-text': text || '',
+    'data-no-swup': true,
   }
 }
 ---
@@ -27,10 +30,11 @@ function zoom(src: string, title: string) {
 {
   block.type === 'image-text' && (
     <div
+      data-lb-group
       class={`mt-8 flex flex-col gap-5 items-start md:flex-row ${block.imageSide === 'right' ? 'md:flex-row-reverse' : ''}`}
     >
       <figure class="w-full md:w-1/2">
-        <a {...zoom(block.image, block.alt)} class="lb-anchor block">
+        <a {...zoom(block.image, block.alt, block.caption)} class="lb-anchor block">
           <img
             src={withBase(block.image)}
             alt={block.alt}
@@ -50,7 +54,7 @@ function zoom(src: string, title: string) {
 
 {
   block.type === 'video-text' && (
-    <div class="mt-8">
+    <div class="mt-8" data-lb-group>
       <figure>
         {block.mediaType === 'video' ? (
           <video
@@ -59,7 +63,7 @@ function zoom(src: string, title: string) {
             class="w-full rounded-xl border border-[#191A1D]/10 dark:border-white/10"
           />
         ) : (
-          <a {...zoom(block.media, block.caption || '视频 / GIF')} class="lb-anchor block">
+          <a {...zoom(block.media, block.caption || '视频 / GIF', block.caption)} class="lb-anchor block">
             <img
               src={withBase(block.media)}
               alt={block.caption || '视频 / GIF'}
@@ -78,12 +82,12 @@ function zoom(src: string, title: string) {
 
 {
   block.type === 'run-it' && (
-    <figure class="mt-8">
+    <figure class="mt-8" data-lb-group>
       <div class="relative overflow-hidden rounded-2xl border border-[#191A1D]/10 bg-[#EFEEE8] dark:border-white/10 dark:bg-[#25232E]">
         {block.mediaType === 'video' ? (
           <video src={withBase(block.media)} controls class="w-full" />
         ) : (
-          <a {...zoom(block.media, block.caption || 'Run it')} class="lb-anchor block">
+          <a {...zoom(block.media, block.caption || 'Run it', block.caption)} class="lb-anchor block">
             <img src={withBase(block.media)} alt={block.caption || 'Run it'} class="w-full" />
           </a>
         )}
@@ -107,11 +111,11 @@ function zoom(src: string, title: string) {
 
 {
   block.type === 'gallery' && (
-    <div class="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3">
+    <div class="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3" data-lb-group>
       {
         block.images.map((img) => (
           <figure>
-            <a {...zoom(img.src, img.alt)} class="lb-anchor block">
+            <a {...zoom(img.src, img.alt, img.caption)} class="lb-anchor block">
               <img
                 src={withBase(img.src)}
                 alt={img.alt}
@@ -130,7 +134,7 @@ function zoom(src: string, title: string) {
 
 {
   block.type === 'before-after' && (
-    <div class="mt-8 cmp-wrap">
+    <div class="mt-8 cmp-wrap" data-lb-group>
       <div class="cmp-head">
         {block.caption && <p class="cmp-title">{block.caption}</p>}
         <div class="live-steps cmp-steps">
